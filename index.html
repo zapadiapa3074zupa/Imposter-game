@@ -19,3 +19,17 @@ function newGame(){idx=0;imp=Math.floor(Math.random()*players.length);w=words[Ma
 function start(){players=[...list.children].map(x=>x.value||"Player");s.style.display="none";game.style.display="block";newGame();}
 function show(){p.textContent=players[idx];card.innerHTML="Pass the device.<br><span class=small>Tap Reveal when ready.</span>";document.querySelector("button[onclick=\"reveal()\"]").style.display="block";next.style.display="none";}
 function reveal(){document.querySelector("button[onclick=\"reveal()\"]").style.display="none";card.innerHTML=idx==imp?`<h3>🕵️ IMPOSTER</h3><p>Hint: <b>${w[1]}</b></p>`:`<h3>✅ WORD</h3><p><b>${w[0]}</b></p>`;next.style.display="block";}
+function go(){if(++idx>=players.length){game.style.display="none";end.style.display="block"}else show();}
+function round(){end.style.display="none";game.style.display="block";newGame();}
+
+let tInt,secs=120;
+function startTimer(){
+ clearInterval(tInt);secs=120;tick();
+ tInt=setInterval(()=>{secs--;tick();if(secs<=0){clearInterval(tInt);alert('Time is up! Vote for the Imposter!');}},1000);
+}
+function tick(){
+ let m=String(Math.floor(secs/60)).padStart(2,'0');
+ let s=String(secs%60).padStart(2,'0');
+ timer.textContent=`${m}:${s}`;
+}
+</script></body></html>
