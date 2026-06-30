@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imposter Word Game</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui,sans-serif}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#15182b,#22284d);display:flex;justify-content:center;align-items:center;color:#fff}
+.card{width:min(95vw,480px);padding:22px;border-radius:22px;background:rgba(255,255,255,.08);backdrop-filter:blur(14px);box-shadow:0 8px 30px #0006}
+h2{text-align:center;margin:0 0 16px}input,button{width:100%;margin:6px 0;padding:12px;border:none;border-radius:12px}
+input{background:#ffffff15;color:#fff}button{background:#6d7cff;color:#fff;font-weight:700;cursor:pointer}
+button:hover{filter:brightness(1.1)}.hide{display:none}.small{text-align:center;opacity:.8}.big{text-align:center;font-size:1.5em;margin:14px 0}
+</style>
+</head>
+<body>
+<div class="card">
+<div id="setup">
+<h2>Imposter Game</h2>
+<label>Players (3-6)</label>
+<input id="count" type="number" min="3" max="6" value="4">
+<div id="names"></div>
+<button onclick="start()">Start Round</button>
+</div>
+
+<div id="reveal" class="hide">
+<h2 id="turn"></h2>
+<div class="big" id="info"></div>
+<button onclick="flip()">Reveal</button>
+<button id="next" class="hide" onclick="next()">Next Player</button>
+</div>
+
+<div id="talk" class="hide">
+<h2>Discussion</h2>
+<p>Discuss and vote for the imposter.</p>
+<button onclick="newRound()">New Round</button>
+<button onclick="restart()">Restart</button>
+</div>
+</div>
+
+<script>
+const words=[
+["Pizza","Italian food"],["Tiger","Striped animal"],["Laptop","Portable computer"],
+["Moon","Earth's satellite"],["Banana","Yellow fruit"],["Doctor","Hospital worker"],
+["Camera","Takes photos"],["Bicycle","Two wheels"],["Guitar","String instrument"],
+["Elephant","Largest land animal"],["Coffee","Morning drink"],["Volcano","Erupts lava"],
+["Rainbow","After rain"],["Castle","Royal home"],["Rocket","Goes to space"],
+["Pencil","Used for writing"],["Library","Many books"],["Robot","Machine helper"],
+["Bridge","Crosses river"],["Penguin","Flightless bird"],["Shark","Ocean predator"],
+["Diamond","Precious gem"],["Train","Runs on tracks"],["Clock","Shows time"],
+["Forest","Many trees"],["Helmet","Head protection"],["Soccer","Popular sport"],
+["Candle","Wax light"],["Snowman","Built in winter"],["Airport","Planes land"],
+["Hamburger","Fast food"],["Phone","Makes calls"],["Key","Unlocks doors"]
+];
+let players=[],roles=[],idx=0,shown=false;
+const namesDiv=document.getElementById("names");
+function build(){
+namesDiv.innerHTML="";
+for(let i=0;i<count.value;i++)namesDiv.innerHTML+=`<input value="Player ${i+1}">`;
+}
+count.oninput=build;build();
+function start(){
+players=[...namesDiv.querySelectorAll("input")].map(i=>i.value||"Player");
+let w=words[Math.random()*words.length|0],imp=Math.random()*players.length|0;
+roles=players.map((_,i)=>i==imp?["IMPOSTER","Hint: "+w[1]]:["WORD",w[0]]);
+idx=0;shown=false;
+setup.classList.add("hide");talk.classList.add("hide");reveal.classList.remove("hide");
+show();
+}
+function show(){
+turn.textContent=players[idx];
+info.textContent="Pass device then press Reveal";
+next.classList.add("hide");
+}
+function flip(){
+if(shown)return;
+shown=true;
+info.innerHTML=roles[idx][0]=="WORD"?`<b>${roles[idx][1]}</b>`:`<b>YOU ARE THE IMPOSTER</b><br>${roles[idx][1]}`;
+next.classList.remove("hide");
+}
+function next(){
+shown=false;
+if(++idx<players.length)show();
+else{reveal.classList.add("hide");talk.classList.remove("hide");}
+}
+function newRound(){start();}
+function restart(){talk.classList.add("hide");setup.classList.remove("hide");}
+</script>
+</body>
+</html>
